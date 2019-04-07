@@ -11,6 +11,10 @@
     padding-top: 20px;
 }
 
+.game-card-content-buttons {
+    padding-top: 10px;
+}
+
 .action-button {
     margin: 5px;
     width: 120px;

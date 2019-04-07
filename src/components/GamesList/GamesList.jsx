@@ -1,70 +1,32 @@
 import React, { useState } from 'react';
 
-import {
-    Row,
-    Col,
-    Button,
-    Container,
-    Input,
-    FormGroup,
-    Label,
-} from 'reactstrap';
+import { Row, Col, Container } from 'reactstrap';
 
-import Game from '../Game/Game';
+import { MODES, ACTIONS } from '../../constants';
+import { Game, GameEditor } from '../';
 import createGame from '../../store/model';
-import { ACTIONS, MODES } from '../../constants';
-import useGamesReducer from '../../reducers/index';
+import useGamesReducer from '../../reducers';
 
 const GamesList = () => {
+    const [editorMode, setEditorMode] = useState(MODES.ADD);
     const [state, dispatch] = useGamesReducer();
-    const [formMode, setFormMode] = useState(MODES.ADD);
 
-    const resetForm = () => {
+    const resetEditor = () => {
         dispatch({
             type: ACTIONS.GAME_SET_VALUE,
             payload: createGame('', '', false),
         });
-        setFormMode(MODES.ADD);
+
+        setEditorMode(MODES.ADD);
     };
 
-    const setFormState = (data) => {
-        setFormMode(MODES.UPDATE);
+    const setEditorState = (data) => {
         dispatch({
             type: ACTIONS.GAME_SET_VALUE,
             payload: data,
         });
-    };
 
-    const setName = (value) => {
-        dispatch({
-            type: ACTIONS.GAME_SET_VALUE,
-            payload: { name: value },
-        });
-    };
-
-    const setVendor = (value) => {
-        dispatch({
-            type: ACTIONS.GAME_SET_VALUE,
-            payload: { vendor: value },
-        });
-    };
-
-    const setIsMultiplayer = (value) => {
-        dispatch({
-            type: ACTIONS.GAME_SET_VALUE,
-            payload: { isMultiplayer: value },
-        });
-    };
-
-    const handleClick = () => {
-        switch (formMode) {
-            case MODES.ADD:
-                return addGame();
-            case MODES.UPDATE:
-                return updateGame();
-            default:
-                break;
-        }
+        setEditorMode(MODES.UPDATE);
     };
 
     const addGame = () => {
@@ -72,7 +34,8 @@ const GamesList = () => {
             type: ACTIONS.GAME_CREATE,
             payload: state.currentGame,
         });
-        resetForm();
+
+        resetEditor();
     };
 
     const deleteGame = (id) => {
@@ -87,59 +50,25 @@ const GamesList = () => {
             type: ACTIONS.GAME_UPDATE,
             payload: state.currentGame,
         });
-        setTimeout(() => resetForm(), 1000);
+
+        resetEditor();
     };
 
     return (
         <Container>
-            <div>
-                <FormGroup>
-                    <Button
-                        color={formMode === MODES.ADD ? 'success' : 'warning'}
-                        onClick={handleClick}
-                    >
-                        {formMode === MODES.ADD
-                            ? 'Add New Game'
-                            : 'Update Game'}
-                    </Button>
-                </FormGroup>
-                <FormGroup>
-                    <Input
-                        placeholder="Name"
-                        value={state.currentGame.name}
-                        onChange={(e) => setName(e.currentTarget.value)}
-                    />
-                </FormGroup>
-                <FormGroup>
-                    <Input
-                        placeholder="Vendor"
-                        value={state.currentGame.vendor}
-                        onChange={(e) => setVendor(e.currentTarget.value)}
-                    />
-                </FormGroup>
-                <FormGroup check>
-                    <Label check>
-                        <Input
-                            type="checkbox"
-                            checked={state.currentGame.isMultiplayer}
-                            onChange={(e) => {
-                                setIsMultiplayer(e.currentTarget.checked);
-                            }}
-                        />{' '}
-                        Multiplayer support
-                    </Label>
-                </FormGroup>
-            </div>
+            <GameEditor mode={editorMode} onAddGame={addGame} onUpdateGame={updateGame} />
             <Col style={{ paddingTop: '20px' }}>
                 <Row>
-                    <h3>Games List</h3>
+                    <Col>
+                        <h3>Games List</h3>
+                    </Col>
                 </Row>
                 <Row>
                     {state.games.map((game) => (
                         <Game
                             key={game.id}
                             data={game}
-                            onEdit={(data) => setFormState(data)}
+                            onEdit={(data) => setEditorState(data)}
                             onDelete={(data) => deleteGame(data.id)}
                         />
                     ))}

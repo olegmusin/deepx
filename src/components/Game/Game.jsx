@@ -11,7 +11,7 @@ const Game = ({ data, onEdit, onDelete }) => {
                     <pre>{JSON.stringify(data, null, 2)}</pre>
                 </Col>
                 <Col md={4} xs={4} className="game-card-content">
-                    <ButtonToolbar style={{ paddingTop: '10px' }}>
+                    <ButtonToolbar className="game-card-content-buttons">
                         <Button
                             className="action-button"
                             color="info"
@@ -22,7 +22,7 @@ const Game = ({ data, onEdit, onDelete }) => {
                         <Button
                             className="action-button"
                             color="danger"
-                            onClick={() => onDelete(data)}
+                            onClick={() => onDelete({ ...data })}
                         >
                             Delete
                         </Button>

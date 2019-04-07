@@ -24,10 +24,7 @@ const useGamesReducer = () => {
                 setState((state) => ({
                     ...state,
                     games: [
-                        ...state.games.filter(
-                            (g) => g.id !== state.currentGame.id,
-                        ),
-                        payload,
+                        ...state.games.map((g) => (g.id === state.currentGame.id ? payload : g)),
                     ],
                 }));
                 break;
